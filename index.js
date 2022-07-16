@@ -110,8 +110,16 @@ bot.on('interactionCreate', async (it)=>{
             }
         })
     }else if(command === "check"){
+        let name = it.options._hoistedOptions[0].value
+        let surname = it.options._hoistedOptions[1].value
+        DB.db('pass').collection('emitted').findOne({"name":name, "surname":surname}, (err, doc)=>{
+            if(doc == null) it.reply("```txt\nLe passeport n'existe pas.\nAttention aux majuscules.\nNom:"+name+"\nPrénom:"+surname+"```")
+            else it.reply("```txt\n" + formatTemplate(doc.name, doc.surname, doc.sex, doc.dn,doc.faction,  doc.residence, doc.profession, doc._id) + "\n```")
+        })
+    }else if(command === "checkID"){
         DB.db('pass').collection('emitted').findOne({"_id": ObjectId(it.options._hoistedOptions[0].value)}, (err, doc)=>{
-            it.reply("```txt\n" + formatTemplate(doc.name, doc.surname, doc.sex, doc.dn,doc.faction,  doc.residence, doc.profession, doc._id) + "\n```")
+            if(doc == null) it.reply("```txt\nLe passeport n'existe pas.\ID:"+it.options._hoistedOptions[0].value+"```")
+            else it.reply("```txt\n" + formatTemplate(doc.name, doc.surname, doc.sex, doc.dn,doc.faction,  doc.residence, doc.profession, doc._id) + "\n```")
         })
     }
 })
